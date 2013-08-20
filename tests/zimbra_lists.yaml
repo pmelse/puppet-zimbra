@@ -1,0 +1,7 @@
+---
+zimbra_lists:
+  list:
+    ensure:  present
+    aliases: ['floyd@mydomain.com','pink@mydomain.com']
+    members: ['rocky@mydomain.com','saruman@mydomain.com']
+    domain:  'mydomain.com'

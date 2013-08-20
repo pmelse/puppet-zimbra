@@ -1,0 +1,21 @@
+---
+:backends:
+  - yaml
+
+:logger: console
+
+:hierarchy:
+  - "%{::environment}/%{::clientcert}/zimbra_domains"
+  - "%{::environment}/%{::clientcert}/zimbra_users"
+  - "%{::environment}/%{::clientcert}/zimbra_lists"
+  - "%{::environment}/%{::clientcert}/common"
+  - test/common
+  - ssh_keys
+  - common
+
+:yaml:
+  :datadir: /etc/puppet/hieradata
+
+:puppet:
+  :datasource: data
+

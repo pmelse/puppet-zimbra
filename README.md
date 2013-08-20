@@ -11,30 +11,11 @@ at the expense of performance.
 
 ##Sample usage
 
-puppet resource zimbra_user domain=mydomain.com
-
-    zimbra_user {
-        'rocky':
-            ensure       => present,
-            domain       => 'mydomain.com',
-            aliases      => ['mordor@mydomain.com', 'marciano@mydomain.com'],
-            user_name    =>  'Rocky Marciano',
-            pwd          => 'Tjnnh)9',
-            mailbox_size => '1G';
-     }
-
-    zimbra_list {
-        'list':
-            ensure => present,
-            aliases => ['floyd@mydomain.com','pink@mydomain.com'],
-            members => ['rocky@mydomain.com','saruman@mydomain.com'],
-            domain => 'mydomain.com',
-    }
+See tests yaml files
 
 ##TODO
 
 Calendar and sharing support.
-Domain management.
 
 ##License
 

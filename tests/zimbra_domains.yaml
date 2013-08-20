@@ -1,0 +1,8 @@
+---
+zimbra_domains:
+  mydomain.com:
+    ensure: present
+  standallown.com:
+    ensure: present
+  nothere.com:
+    ensure: absent

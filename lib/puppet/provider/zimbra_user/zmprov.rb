@@ -44,7 +44,7 @@ Puppet::Type.type(:zimbra_user).provide(:zmprov) do
             quotas[cos_id]=quota
         end
         #############
-        
+
         raw_users=raw.split("\n\n")
         raw_users.compact.map  { |i| 
             # getting uid
@@ -94,7 +94,7 @@ Puppet::Type.type(:zimbra_user).provide(:zmprov) do
 
     def exists?
         @property_hash[:ensure] == :present
-	end
+    end
 
     def create
         # Create user mailbox

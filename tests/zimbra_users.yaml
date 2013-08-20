@@ -1,0 +1,15 @@
+---
+zimbra_users:
+  rocky:
+    ensure: present
+    domain: mydomain.com
+    aliases: ['mordor@mydomain.com', 'marciano@mydomain.com']
+    user_name: 'Rocky Marciano'
+    pwd: 'Tjnnh)98'
+    mailbox_size: '1G'
+  sylvester:
+    ensure: present
+    domain: standallown.com
+    user_name: 'Sylvester Stallone'
+    pwd: 'GD4scD3gg'
+    mailbox_size: '2G'
