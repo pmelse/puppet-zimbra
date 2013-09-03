@@ -56,6 +56,12 @@ Puppet::Type.type(:zimbra_user).provide(:zmprov) do
             else
                 displayName = String.new
             end    
+	    # getting pwd hist
+            if i.include?('zimbraPasswordHistory: ')
+                pwd_hist = i.grep(/zimbraPasswordHistory: /)[0].gsub('zimbraPasswordHistory: ','').chomp
+            else
+                pwd_hist = String.new
+            end    
             # getting aliases for each user
             raw_aliases=i.grep(/zimbraMailAlias: /)
             unless raw_aliases.empty?
@@ -79,6 +85,7 @@ Puppet::Type.type(:zimbra_user).provide(:zmprov) do
                 :ensure => :present, 
                 :user_name => displayName, 
                 :aliases => aliases,
+		:pwd_hist => pwd_hist,
                 :mailbox_size => quota)
         }
     end
@@ -98,14 +105,20 @@ Puppet::Type.type(:zimbra_user).provide(:zmprov) do
 
     def create
         # Create user mailbox
-        #
-        #
-        options= Array.new
+	options= Array.new
         (options << 'zimbraMailHost' << resource[:location]) if resource[:location]
         (options << 'zimbraMailQuota' << resource[:mailbox_size]) if resource[:mailbox_size]
         (options << 'displayName' <<  resource[:user_name]) if resource[:user_name]
+        (options << 'zimbraPasswordHistory' <<  resource[:pwd_hist]) if resource[:pwd_hist]
 
-        zmprov('ca',resource[:mailbox]+'@'+resource[:domain],resource[:pwd],options)
+        zmprov('ca',resource[:mailbox]+'@'+resource[:domain],'TemPwd4rm',options)
+
+	# Update the crypt password (won't work if crypt is used by normal ca provisioning ; dirty hack
+        password= Array.new
+        (password << 'userPassword' << resource[:pwd]) if resource[:pwd]
+
+        zmprov('ma',resource[:mailbox]+'@'+resource[:domain],password)
+
         # Add aliases
         unless resource[:aliases].nil?
             resource[:aliases].flatten.each { |element|
@@ -126,9 +139,30 @@ Puppet::Type.type(:zimbra_user).provide(:zmprov) do
         @property_hash[:aliases]
     end
 
+    def user_name
+        @property_hash[:user_name]
+    end
+
+    def pwd_hist
+        @property_hash[:pwd_hist]
+    end
+
+    def user_name=(value)
+        zmprov('ma',resource[:mailbox]+'@'+resource[:domain], 'displayName', resource[:user_name])
+    end
 
     def mailbox_size=(value)
         zmprov('ma',resource[:mailbox]+'@'+resource[:domain], 'zimbraMailQuota', resource[:mailbox_size])
+    end
+
+    # zimbraPasswordHistory is (mis)used to store the time() where the password is changed by puppet.
+    # To be able to alter the password via puppet and not override changes that are done via the webgui.
+    def pwd_hist=(value)
+        zmprov('ma',resource[:mailbox]+'@'+resource[:domain], 'zimbraPasswordHistory', resource[:pwd_hist])
+        password= Array.new
+        (password << 'userPassword' << resource[:pwd]) if resource[:pwd]
+
+        zmprov('ma',resource[:mailbox]+'@'+resource[:domain],password)
     end
 
     def aliases=(value)
